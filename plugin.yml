@@ -1,0 +1,19 @@
+name: Argonauts
+version: 1.0
+description: Bring MMORPG style classes to MC!
+author: Phenom
+authors: [Evan]
+main: com.phenom.argonauts.Main
+commands:
+  uuid:
+    description: display your uuid.
+    usage: Simply type /uuid. This will show you your uuid!
+  sethomepoint:
+    description: Set the home point to return to.
+    usage: Simply type sethomepoint, and your home will be set!
+  adventurer:
+    description: Check and see if you're an adventurer.
+    usage: Simply type /adventurer. Returns true if you are and false otherwise
+  mark:
+    description: Set your current location to be where your compass points to!
+    usage: Stand where you want the compass to point to, then type /mark to make your compass point to that spot!
