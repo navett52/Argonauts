@@ -73,7 +73,7 @@ public enum Cooldown
 	 * Create a Cooldown
 	 * @param milliseconds : The amount of time in milliseconds this Cooldown will represent
 	 */
-	Cooldown(int milliseconds)
+	private Cooldown(int milliseconds)
 	{
 		this.time = milliseconds;
 	}
