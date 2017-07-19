@@ -19,6 +19,7 @@ import com.phenom.argonauts.database.ArgonautsSQLite;
 import com.phenom.argonauts.denizens.DenizenModule;
 import com.phenom.argonauts.denizens.Support;
 import com.phenom.argonauts.denizens.SupportManager;
+import com.phenom.argonauts.denizens.dAdventurer;
 import com.phenom.argonauts.listeners.AbilityUseListener;
 import com.phenom.argonauts.listeners.JoinListener;
 import com.phenom.argonauts.listeners.LogoffListener;
@@ -67,6 +68,7 @@ public class Main extends JavaPlugin {
         	 * In this class we have all our new denizen stuff.
         	 */
         	supportmanager.register(Support.setPlugin(DenizenModule.class, pm.getPlugin(this.getName())));
+        	//supportmanager.register(Support.setPlugin(dAdventurer.class, pm.getPlugin(this.getName())));
 		} catch (Exception e) {
 			initError(e);
 			return;

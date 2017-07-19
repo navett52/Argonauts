@@ -29,6 +29,13 @@ public class dPlayerExt extends dObjectExtension {
     	if (a.startsWith("isadventurer")) {
     		return new Element(Main.adventurers.containsKey(dplayer.getName())).getAttribute(a.fulfill(1));
     	}
+    	
+    	//Here is my attempt of how I think I'd go about returning a dAdventurer
+    	if (a.startsWith("adventurer")) {
+    		return new dAdventurer(Main.adventurers.get(this.dplayer.getName())).getAttribute(a.fulfill(1));
+    	}
+    	//End Nave's Attempt
+    	
     	return new Element(this.dplayer.identify()).getAttribute(a);
     }
 }
