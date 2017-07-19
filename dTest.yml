@@ -1,0 +1,11 @@
+test:
+  type: world
+  events:
+
+    on player right clicks block:
+		- if <player.isadventurer> == true {
+			- announce <player.adventurer>
+			- announce <player.adventurer.abilitypoints>
+			- announce <player.adventurer.atk>
+			- adjust <player.adventurer> atk:2.0
+		}

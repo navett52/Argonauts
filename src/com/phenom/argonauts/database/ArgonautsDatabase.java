@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.phenom.argonauts.Adventurer;
 import com.phenom.argonauts.Main;
 import com.phenom.argonauts.database.Error;
 import com.phenom.argonauts.database.Errors;
@@ -70,22 +72,84 @@ public abstract class ArgonautsDatabase
         }
         finally 
         {
-            try 
-            {
-                if (addAdventurer != null)
-                {
-                	addAdventurer.close();
-                }
-                if (connection != null)
-                {
-                	connection.close();                	
-                }
-            } 
-            catch (SQLException ex) 
-            {
-                Main.plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
-            }
+            close(addAdventurer);
         }
+    }
+    
+    public void initAdventurer(String name) {
+    	connection = getSQLConnection();
+    	PreparedStatement initAdventurer = null;
+    	ResultSet response = null;
+    	double[] stats = new double[6];
+    	String uuid = "";
+    	int lastStyleID = 0;
+    	int homepointID = 0;
+    	int[] homePoint = new int[3];
+    	
+    	//Handling initialization of variables within tAdventurer
+    	try 
+    	{
+    		initAdventurer = connection.prepareStatement("SELECT * FROM tAdventurer WHERE Name = '" + name + "';");
+    		response = initAdventurer.executeQuery();
+    		for (int i = 0; i < stats.length; i++)
+    		{
+    			stats[i] = response.getDouble(i + 5); //Add 5 to i to only grab the stat values which are doubles
+    		}
+    		uuid = response.getString(2);
+    		lastStyleID = response.getInt(4);
+    		homepointID = response.getInt(11);
+    	}
+    	catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+        finally 
+        {
+            close(initAdventurer, response);
+        }
+    	
+    	//Handling initialization of HomePoint
+    	try 
+    	{
+    		initAdventurer = connection.prepareStatement("SELECT * FROM tHomePoint WHERE HomePointID = " + homepointID + ";");
+    		response = initAdventurer.executeQuery();
+    		homePoint[0] = response.getInt(1);
+    		homePoint[1] = response.getInt(2);
+    		homePoint[2] = response.getInt(3);
+    	}
+    	catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+        finally 
+        {
+        	close(initAdventurer, response);
+        }
+    	
+    	//Handling logging in as the last played style
+    	try 
+    	{
+    		initAdventurer = connection.prepareStatement("SELECT * FROM tUnlockedStyle WHERE UnlockedStyleID = " + lastStyleID + ";");
+    		response = initAdventurer.executeQuery();
+    		int styleID = response.getInt(2);
+    	}
+    	catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+        finally 
+        {
+        	close(initAdventurer, response);
+        }
+    	Adventurer adventurer = Main.adventurers.get(name);
+    	adventurer.setAtk(stats[0]);
+    	adventurer.setDef(stats[1]);
+    	adventurer.setMagAtk(stats[2]);
+    	adventurer.setMagDef(stats[3]);
+    	adventurer.setHp(stats[4]);
+    	adventurer.setMp(stats[5]);
+    	adventurer.setPlayer(Bukkit.getPlayer(name));
+    	adventurer.setUuid(UUID.fromString(uuid));
     }
     
     /**
@@ -233,6 +297,10 @@ public abstract class ArgonautsDatabase
     		{            	
     			rs.close();
     		}
+    		if (connection != null)
+    		{
+    			connection.close();
+    		}
     	} 
     	catch (SQLException ex) 
     	{
@@ -240,6 +308,29 @@ public abstract class ArgonautsDatabase
     	}
     }
 
+    /**
+     * A convenience method to close a prepared statement and a result set
+     * @param ps : The Prepared Statement to close
+     */
+    public void close(PreparedStatement ps)
+    {
+    	try 
+    	{
+    		if (ps != null)
+    		{
+    			ps.close();            	
+    		}
+    		if (connection != null)
+    		{
+    			connection.close();
+    		}
+    	} 
+    	catch (SQLException ex) 
+    	{
+    		Error.close(Main.plugin, ex);
+    	}
+    }
+    
 	//Leaving this here for example purposes for now
     public void setTokens(Player player, Integer tokens, Integer total) {
         Connection conn = null;

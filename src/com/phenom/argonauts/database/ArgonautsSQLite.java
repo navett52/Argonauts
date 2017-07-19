@@ -95,6 +95,8 @@ public class ArgonautsSQLite extends ArgonautsDatabase
             "MagicDefense DOUBLE(11) NOT NULL," +
             "Health DOUBLE(11) NOT NULL," +
             "Mana DOUBLE(11) NOT NULL," +
+            "Level INT(4) NOT NULL," +
+            "Exp INT(50) NOT NULL," +
             //Foreign Keys (If you have any)
             "StyleID INT(255) NOT NULL," +
             "AdventurerID INT(255) NOT NULL," +

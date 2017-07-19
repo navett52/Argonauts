@@ -14,7 +14,8 @@ public class JoinListener implements Listener
 	{
 		if (Main.db.checkForAdventurer(event.getPlayer().getName(), event.getPlayer().getUniqueId())) //Check if the player exists in the database by name first
 		{
-			Main.adventurers.put(event.getPlayer().getName(), new Adventurer(event.getPlayer()));
+			Main.adventurers.put(event.getPlayer().getName(), new Adventurer(event.getPlayer())); //Initializing a new Adventurer object using the logging in Player and putting it into the adventurers list
+			
 		}
 		else
 		{
