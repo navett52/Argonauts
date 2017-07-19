@@ -33,6 +33,14 @@ public class dAdventurer implements dObject, Adjustable {
 		}
 	}
 	
+    public static boolean matches(String string) {
+        return valueOf(string) != null;
+    }
+    
+	public static dAdventurer valueOf(String uuid) {
+		return valueOf(uuid, null);
+	}
+	
 	public Adventurer getAdventurer() {
 		return this.adventurer;
 	}
@@ -104,6 +112,7 @@ public class dAdventurer implements dObject, Adjustable {
 		// TODO Auto-generated method stub
 		
 	}
+	
     @Fetchable("adventurer")
     public static dAdventurer valueOf(String string, TagContext context) {
         if (string == null) {

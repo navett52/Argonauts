@@ -4,6 +4,7 @@ description: Bring MMORPG style classes to MC!
 author: Phenom
 authors: [Evan]
 main: com.phenom.argonauts.Main
+depend: [Denizen]
 commands:
   uuid:
     description: display your uuid.
