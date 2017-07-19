@@ -4,6 +4,7 @@ import com.phenom.argonauts.Main;
 
 import net.aufdemrand.denizen.objects.dPlayer;
 import net.aufdemrand.denizencore.objects.Element;
+import net.aufdemrand.denizencore.objects.Mechanism;
 import net.aufdemrand.denizencore.objects.dObject;
 import net.aufdemrand.denizencore.tags.Attribute;
 
@@ -38,4 +39,9 @@ public class dPlayerExt extends dObjectExtension {
     	
     	return new Element(this.dplayer.identify()).getAttribute(a);
     }
+	
+	@Override
+	public void adjust(Mechanism m) {
+	}
+    
 }
