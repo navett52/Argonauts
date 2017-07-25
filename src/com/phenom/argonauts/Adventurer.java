@@ -49,14 +49,16 @@ public class Adventurer {
 	 * Constructor for the Adventurer object.
 	 * @param player The player we want to make an adventurer.
 	 */
-	public Adventurer(Player player) {
-		this.setPlayer(Bukkit.getServer().getPlayer(player.getName()));
+	public Adventurer(Player player, UUID uuid) {
+		Main.adventurers.put(player.getName(), this);
+		this.player = player;
+		this.uuid = uuid;
 		ItemStack returnToHomeIcon = new ItemStack(Material.BEACON, 1);
 		player.getInventory().setHeldItemSlot(0);
 		player.getInventory().setItemInMainHand(returnToHomeIcon);
 		this.abilities.put("Return", new Return(Cooldown.FIVE_S));
 	}
-	
+
 	/**
 	 * Returns an adventurer to their most recently registered home point.
 	 */

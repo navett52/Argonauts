@@ -119,6 +119,34 @@ public class Main extends JavaPlugin {
 			}
 		}
 		
+		if (command.getName().equalsIgnoreCase("init")) {
+			if (sender instanceof Player) {
+				Player player = (Player) sender;
+				Adventurer a = Main.adventurers.get(player.getName());
+				player.sendMessage("Atk: " + a.getAtk());
+				player.sendMessage("Def: " + a.getDef());
+				player.sendMessage("MagAtk: " + a.getMagAtk());
+				player.sendMessage("MagDef: " + a.getMagDef());
+				player.sendMessage("Hp: " + a.getHp());
+				player.sendMessage("Mp: " + a.getMp());
+				player.sendMessage("Lvl: " + a.getLvl());
+				player.sendMessage("Exp: " + a.getExp());
+				
+				player.sendMessage("AP: " + a.getAbilityPoints());
+				player.sendMessage("Str: " + a.getStr());
+				player.sendMessage("Vit: " + a.getVit());
+				player.sendMessage("Intel: " + a.getIntel());
+				player.sendMessage("Wis: " + a.getWis());
+			}
+		}
+		
+		if (command.getName().equalsIgnoreCase("db")) {
+			if (sender instanceof Player) {
+				Player p = (Player) sender;
+				p.sendMessage(db.getUUID(p.getName()));
+			}
+		}
+		
 		return false;
 	}
 	

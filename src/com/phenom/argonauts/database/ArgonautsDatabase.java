@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.phenom.argonauts.Adventurer;
@@ -30,17 +31,13 @@ public abstract class ArgonautsDatabase
     public abstract void load(); //Charged with loading the database however the implementation sees fit.
     
     /**
-     * Adds a new adventurer into the database.
-     * @param UUID : The Unique ID of the player. (Required)
-     * @param Name : The Name of the player. (Required)
-     * @param Atk : The base attack of the player.
-     * @param Def : The base defense of the player.
-     * @param MagicAtk : The base magic attack of the player.
-     * @param MagicDef : The base magic defense of the player.
-     * @param Health : The base health of the Adventurer.
-     * @param Mana : The base mana of the Adventurer.
+     * Add a new record to tAdventurer
+     * @param Name : Name of the Adventurer
+     * @param UUID : Unique Identifier of the Adventurer (This doesn't change)
+     * @param lastStyleID : The ID of the last style the adventurer played (default - 0)
+     * @param homePointID : The ID of the players registered home point (default - 0)
      */
-    public void addNewAdventurer(String Name, UUID UUID, double Atk, double Def, double MagicAtk, double MagicDef, double Health, double Mana) 
+    public void addNewAdventurer(String Name, UUID UUID, int lastStyleID, int homePointID) 
     {
     	connection = getSQLConnection();
     	PreparedStatement addAdventurer = null;
@@ -49,21 +46,13 @@ public abstract class ArgonautsDatabase
     		addAdventurer = connection.prepareStatement("INSERT INTO tAdventurer (" + 
     				"UUID," +
     				"Name," +
-    				"Attack," +
-    				"Defense," +
-    				"MagicAttack," +
-    				"MagicDefense," +
-    				"Health," +
-    				"Mana)" +
-    				"VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+    				"LastStyle," +
+    				"HomePointID)" +
+    				"VALUES (?, ?, ?, ?);");
     		addAdventurer.setString(1, UUID.toString());
     		addAdventurer.setString(2, Name);
-    		addAdventurer.setDouble(3, Atk);
-    		addAdventurer.setDouble(4, Def);
-    		addAdventurer.setDouble(5, MagicAtk);
-    		addAdventurer.setDouble(6, MagicDef);
-    		addAdventurer.setDouble(7, Health);
-    		addAdventurer.setDouble(8, Mana);
+    		addAdventurer.setDouble(3, lastStyleID);
+    		addAdventurer.setDouble(4, homePointID);
     		addAdventurer.execute();
     	}
     	catch (SQLException ex) 
@@ -76,7 +65,62 @@ public abstract class ArgonautsDatabase
         }
     }
     
-    public void initAdventurer(String name) {
+    /*
+     * SELECT tAdventurer.Name, tHomePoint.xCoord, tHomePoint.yCoord, tHomePoint.zCoord, tRole.Name, tUnlockedRole.AbilityPoints, tUnlockedRole.Strength, tUnlockedRole.Vitality,
+tUnlockedRole.Intelligence, tUnlockedRole.Wisdom, tStyle.Name, tUnlockedStyle.Attack, tUnlockedStyle.Defense, tUnlockedStyle.MagicAttack, tUnlockedStyle.MagicDefense, tUnlockedStyle.Health, 
+tUnlockedStyle.Mana FROM tAdventurer
+JOIN tHomePoint ON tHomePoint.HomePointID = tAdventurer.HomePointID
+JOIN tStyle ON tStyle.Name = tAdventurer.LastStyle
+JOIN tUnlockedStyle ON tUnlockedStyle.StyleID = tStyle.StyleID
+JOIN tRole_Style ON tRole_Style.StyleID = tStyle.StyleID
+JOIN tRole ON tRole.RoleID = tRole_Style.RoleID
+JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID
+     */
+    
+    public void initAdventurer (Adventurer adventurer) {
+    	connection = getSQLConnection();
+    	PreparedStatement initAdventurer = null;
+    	ResultSet response = null;
+    	
+    	try {
+    		initAdventurer = connection.prepareStatement("SELECT tAdventurer.Name, tHomePoint.xCoord, tHomePoint.yCoord, tHomePoint.zCoord, tRole.Name, tUnlockedRole.AbilityPoints," +
+					"tUnlockedRole.Strength, tUnlockedRole.Vitality, tUnlockedRole.Intelligence, tUnlockedRole.Wisdom, tStyle.Name, tUnlockedStyle.Attack, tUnlockedStyle.Defense," +
+					"tUnlockedStyle.MagicAttack, tUnlockedStyle.MagicDefense, tUnlockedStyle.Health, tUnlockedStyle.Mana, tUnlockedStyle.Level, tUnlockedStyle.Exp FROM tAdventurer" +
+					"JOIN tHomePoint ON tHomePoint.HomePointID = tAdventurer.HomePointID JOIN tStyle ON tStyle.Name = tAdventurer.LastStyle JOIN tUnlockedStyle ON tUnlockedStyle.StyleID = tStyle.StyleID JOIN tRole_Style ON tRole_Style.StyleID = tStyle.StyleID JOIN tRole ON tRole.RoleID = tRole_Style.RoleID JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID " +
+					"WHERE tAdventurer.Name = '" + adventurer.getPlayer().getName() + "'");
+    		response = initAdventurer.executeQuery();
+    		//Looks like I'll need to modify the tHomePoint Schema to allow for a World to be set
+    		adventurer.setHome(new Location(Bukkit.getWorld("StartingIsland"), response.getDouble(2), response.getDouble(3), response.getDouble(4)));
+    		//Might need to grab column 5 : Role name if ricky wants me to add a LastRole property to adventurer for now
+    		adventurer.setAbilityPoints(response.getInt(6));
+    		adventurer.setStr(response.getInt(7));
+    		adventurer.setVit(response.getInt(8));
+    		adventurer.setIntel(response.getInt(9));
+    		adventurer.setWis(response.getInt(10));
+    		//Might need to grab column 11 : Style Name if ricky wants me to add a LastStyle property to adventurer for now
+    		adventurer.setAtk(response.getDouble(12));
+    		adventurer.setDef(response.getDouble(13));
+    		adventurer.setMagAtk(response.getDouble(14));
+    		adventurer.setMagDef(response.getDouble(15));
+    		adventurer.setHp(response.getDouble(16));
+    		adventurer.setMp(response.getDouble(17));
+    		adventurer.setLvl(response.getInt(18));
+    		adventurer.setExp(response.getInt(19));
+    	}
+    	catch (SQLException ex) {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+    	finally {
+            close(initAdventurer, response);
+        }
+    	
+    }
+    
+    /**
+     * Initialize the values for the Adventurer (stats, level, etc.)
+     * @param adventurer : The adventurer to initialize
+     */
+    /*public void initAdventurer(Adventurer adventurer) {
     	connection = getSQLConnection();
     	PreparedStatement initAdventurer = null;
     	ResultSet response = null;
@@ -85,16 +129,15 @@ public abstract class ArgonautsDatabase
     	int lastStyleID = 0;
     	int homepointID = 0;
     	int[] homePoint = new int[3];
+    	int styleID = 0;
+    	int adventurerID = 0;
     	
     	//Handling initialization of variables within tAdventurer
     	try 
     	{
-    		initAdventurer = connection.prepareStatement("SELECT * FROM tAdventurer WHERE Name = '" + name + "';");
+    		initAdventurer = connection.prepareStatement("SELECT * FROM tAdventurer WHERE Name = '" + adventurer.getPlayer().getName() + "';");
     		response = initAdventurer.executeQuery();
-    		for (int i = 0; i < stats.length; i++)
-    		{
-    			stats[i] = response.getDouble(i + 5); //Add 5 to i to only grab the stat values which are doubles
-    		}
+    		adventurerID = response.getInt(1);
     		uuid = response.getString(2);
     		lastStyleID = response.getInt(4);
     		homepointID = response.getInt(11);
@@ -125,13 +168,17 @@ public abstract class ArgonautsDatabase
         {
         	close(initAdventurer, response);
         }
-    	
+
     	//Handling logging in as the last played style
     	try 
     	{
-    		initAdventurer = connection.prepareStatement("SELECT * FROM tUnlockedStyle WHERE UnlockedStyleID = " + lastStyleID + ";");
+    		initAdventurer = connection.prepareStatement("SELECT * FROM tUnlockedStyle WHERE UnlockedStyleID = " + lastStyleID + " AND AdventurerID = " + adventurerID + ";");
     		response = initAdventurer.executeQuery();
-    		int styleID = response.getInt(2);
+    		for (int i = 0; i < stats.length; i++)
+    		{
+    			stats[i] = response.getDouble(i + 2); //Add 2 as an offset to i to only grab the stat values which are doubles
+    		}
+    		styleID = response.getInt(1);
     	}
     	catch (SQLException ex) 
         {
@@ -141,15 +188,20 @@ public abstract class ArgonautsDatabase
         {
         	close(initAdventurer, response);
         }
-    	Adventurer adventurer = Main.adventurers.get(name);
     	adventurer.setAtk(stats[0]);
     	adventurer.setDef(stats[1]);
     	adventurer.setMagAtk(stats[2]);
     	adventurer.setMagDef(stats[3]);
     	adventurer.setHp(stats[4]);
     	adventurer.setMp(stats[5]);
-    	adventurer.setPlayer(Bukkit.getPlayer(name));
     	adventurer.setUuid(UUID.fromString(uuid));
+    }*/
+    
+    public void saveAdventurer (Adventurer adventurer) {
+    	connection = getSQLConnection();
+    	PreparedStatement saveAdventurer = null;
+    	
+    	
     }
     
     /**
@@ -278,6 +330,51 @@ public abstract class ArgonautsDatabase
             }
         }
 		return false;
+    }
+    
+    public String getUUID (String name) {
+    	connection = getSQLConnection();
+    	PreparedStatement getUUID = null;
+    	ResultSet response = null;
+    	String result = "";
+    	
+    	try {
+    		getUUID = connection.prepareStatement("SELECT UUID FROM tAdventurer WHERE Name = '" + name + "';");
+    		response = getUUID.executeQuery();
+    		result = response.getString(1);
+    	}
+    	catch (SQLException ex) {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+    	finally {
+    		close(getUUID);
+    	}
+    	return result;
+    }
+    
+    /**
+     * Update a players name in the database since MC now supports name changing
+     * @param uuid : A players Unique Identifier that never changes
+     * @param newName : The players new name
+     */
+    public void updateName (String uuid, String newName) {
+    	connection = getSQLConnection();
+    	PreparedStatement updateName = null;
+    	try {
+    		updateName = connection.prepareStatement("UPDATE tAdventurer SET " + 
+    				"Name = (?)" +
+    				"WHERE UUID = '" + uuid + "';");
+        	updateName.setString(1, newName);
+        	updateName.execute();
+        	
+    	}
+    	catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+    	finally {
+    		close(updateName);
+    	}
     }
     
     /**

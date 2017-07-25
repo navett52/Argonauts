@@ -18,3 +18,9 @@ commands:
   mark:
     description: Set your current location to be where your compass points to!
     usage: Stand where you want the compass to point to, then type /mark to make your compass point to that spot!
+  init:
+    description: List the initialized player properties
+    usage: /init
+  db:
+    description: Test the DB connection by getting the players uuid
+    usage: /db

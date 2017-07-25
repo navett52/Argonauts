@@ -52,11 +52,59 @@ public class dAdventurer implements dObject, Adjustable {
 	public String getAttribute(Attribute a) {
 		if (a==null) new Element(identify());
 		
+		if (a.startsWith("atk")) {
+			return new Element(this.adventurer.getAtk()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("def")) {
+			return new Element(this.adventurer.getDef()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("magAtk")) {
+			return new Element(this.adventurer.getMagAtk()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("magDef")) {
+			return new Element(this.adventurer.getMagDef()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("hp")) {
+			return new Element(this.adventurer.getHp()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("mp")) {
+			return new Element(this.adventurer.getMp()).getAttribute(a.fulfill(1));
+		}
+		
 		if (a.startsWith("abilitypoints")) {
 			return new Element(this.adventurer.getAbilityPoints()).getAttribute(a.fulfill(1));
 		}
-		if (a.startsWith("atk")) {
-			return new Element(this.adventurer.getAtk()).getAttribute(a.fulfill(1));
+		if (a.startsWith("str")) {
+			return new Element(this.adventurer.getStr()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("vit")) {
+			return new Element(this.adventurer.getVit()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("intel")) {
+			return new Element(this.adventurer.getIntel()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("wis")) {
+			return new Element(this.adventurer.getWis()).getAttribute(a.fulfill(1));
+		}
+		
+		if (a.startsWith("homeX")) {
+			return new Element(this.adventurer.getHome().getX()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("homeY")) {
+			return new Element(this.adventurer.getHome().getY()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("homeZ")) {
+			return new Element(this.adventurer.getHome().getZ()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("lvl")) {
+			return new Element(this.adventurer.getLvl()).getAttribute(a.fulfill(1));
+		}
+		if (a.startsWith("exp")) {
+			return new Element(this.adventurer.getExp()).getAttribute(a.fulfill(1));
+		}
+		
+		if (a.startsWith("auid")) {
+			return new Element(this.adventurer.getUuid().toString()).getAttribute(a.fulfill(1));
 		}
 		return new Element(identify()).getAttribute(a);
 	}
@@ -64,10 +112,56 @@ public class dAdventurer implements dObject, Adjustable {
 	@Override
 	public void adjust(Mechanism m) {
 		Element value = m.getValue();
-		if (m.matches("abilitypoints") && m.requireDouble()) {
-			this.adventurer.setAbilityPoints(value.asDouble());
-		} else if (m.matches("atk") && m.requireDouble()) {
+		//Base Stats
+		if (m.matches("atk") && m.requireDouble()) {
 			this.adventurer.setAtk(value.asDouble());
+		}
+		else if (m.matches("def") && m.requireDouble()) {
+			this.adventurer.setDef(value.asDouble());
+		}
+		else if (m.matches("magAtk") && m.requireDouble()) {
+			this.adventurer.setMagAtk(value.asDouble());
+		}
+		else if (m.matches("magDef") && m.requireDouble()) {
+			this.adventurer.setMagDef(value.asDouble());
+		}
+		else if (m.matches("hp") && m.requireDouble()) {
+			this.adventurer.setHp(value.asDouble());
+		}
+		else if (m.matches("mp") && m.requireDouble()) {
+			this.adventurer.setDef(value.asDouble());
+		}
+		//Ability points and Ability Stats
+		else if (m.matches("abilitypoints") && m.requireDouble()) {
+			this.adventurer.setAbilityPoints(value.asDouble());
+		}
+		else if (m.matches("str") && m.requireDouble()) {
+			this.adventurer.setStr(value.asDouble());
+		}
+		else if (m.matches("vit") && m.requireDouble()) {
+			this.adventurer.setVit(value.asDouble());
+		}
+		else if (m.matches("intel") && m.requireDouble()) {
+			this.adventurer.setIntel(value.asDouble());
+		}
+		else if (m.matches("wis") && m.requireDouble()) {
+			this.adventurer.setWis(value.asDouble());
+		}
+		
+		else if (m.matches("homeX") && m.requireDouble()) {
+			this.adventurer.getHome().setX(value.asDouble());;
+		}
+		else if (m.matches("homeY") && m.requireDouble()) {
+			this.adventurer.getHome().setY(value.asDouble());;
+		}
+		else if (m.matches("homeZ") && m.requireDouble()) {
+			this.adventurer.getHome().setZ(value.asDouble());;
+		}
+		else if (m.matches("lvl") && m.requireDouble()) {
+			this.adventurer.setLvl(value.asInt());
+		}
+		else if (m.matches("exp") && m.requireDouble()) {
+			this.adventurer.setExp(value.asInt());
 		}
 	}
 
