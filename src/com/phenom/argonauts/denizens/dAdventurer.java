@@ -106,6 +106,10 @@ public class dAdventurer implements dObject, Adjustable {
 		if (a.startsWith("auid")) {
 			return new Element(this.adventurer.getUuid().toString()).getAttribute(a.fulfill(1));
 		}
+		
+		if (a.startsWith("save")) {
+			Main.db.saveAdventurer(this.adventurer);
+		}
 		return new Element(identify()).getAttribute(a);
 	}
 	

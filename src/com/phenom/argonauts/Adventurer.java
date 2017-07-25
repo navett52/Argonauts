@@ -17,6 +17,7 @@ import com.phenom.argonauts.events.AbilityUseEvent;
 public class Adventurer {
 	
 	//Base stats used to calculate damages and defenses as well as how much health and mana points you have
+	private String lastStyle;
 	private double atk; //Attack
 	private double def; //Defense
 	private double magAtk; //Magic Attack
@@ -213,5 +214,13 @@ public class Adventurer {
 	
 	public void addAbility(String name, Ability ability) {
 		this.abilities.put(name, ability);
+	}
+
+	public String getLastStyle() {
+		return lastStyle;
+	}
+
+	public void setLastStyle(String lastStyle) {
+		this.lastStyle = lastStyle;
 	}
 }

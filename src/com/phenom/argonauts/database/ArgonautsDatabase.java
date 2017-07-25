@@ -83,11 +83,8 @@ JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID
     	ResultSet response = null;
     	
     	try {
-    		initAdventurer = connection.prepareStatement("SELECT tAdventurer.Name, tHomePoint.xCoord, tHomePoint.yCoord, tHomePoint.zCoord, tRole.Name, tUnlockedRole.AbilityPoints," +
-					"tUnlockedRole.Strength, tUnlockedRole.Vitality, tUnlockedRole.Intelligence, tUnlockedRole.Wisdom, tStyle.Name, tUnlockedStyle.Attack, tUnlockedStyle.Defense," +
-					"tUnlockedStyle.MagicAttack, tUnlockedStyle.MagicDefense, tUnlockedStyle.Health, tUnlockedStyle.Mana, tUnlockedStyle.Level, tUnlockedStyle.Exp FROM tAdventurer" +
-					"JOIN tHomePoint ON tHomePoint.HomePointID = tAdventurer.HomePointID JOIN tStyle ON tStyle.Name = tAdventurer.LastStyle JOIN tUnlockedStyle ON tUnlockedStyle.StyleID = tStyle.StyleID JOIN tRole_Style ON tRole_Style.StyleID = tStyle.StyleID JOIN tRole ON tRole.RoleID = tRole_Style.RoleID JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID " +
-					"WHERE tAdventurer.Name = '" + adventurer.getPlayer().getName() + "'");
+    		initAdventurer = connection.prepareStatement("SELECT tAdventurer.Name, tHomePoint.xCoord, tHomePoint.yCoord, tHomePoint.zCoord, tRole.Name, tUnlockedRole.AbilityPoints, tUnlockedRole.Strength, tUnlockedRole.Vitality, tUnlockedRole.Intelligence, tUnlockedRole.Wisdom, tStyle.Name, tUnlockedStyle.Attack, tUnlockedStyle.Defense, tUnlockedStyle.MagicAttack, tUnlockedStyle.MagicDefense, tUnlockedStyle.Health, tUnlockedStyle.Mana, tUnlockedStyle.Level, tUnlockedStyle.Exp FROM tAdventurer JOIN tHomePoint ON tHomePoint.HomePointID = tAdventurer.HomePointID JOIN tStyle ON tStyle.Name = tAdventurer.LastStyle JOIN tUnlockedStyle ON tUnlockedStyle.StyleID = tStyle.StyleID JOIN tRole_Style ON tRole_Style.StyleID = tStyle.StyleID JOIN tRole ON tRole.RoleID = tRole_Style.RoleID JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID WHERE tAdventurer.Name = ?");
+    		initAdventurer.setString(1, adventurer.getPlayer().getName());
     		response = initAdventurer.executeQuery();
     		//Looks like I'll need to modify the tHomePoint Schema to allow for a World to be set
     		adventurer.setHome(new Location(Bukkit.getWorld("StartingIsland"), response.getDouble(2), response.getDouble(3), response.getDouble(4)));
@@ -116,92 +113,61 @@ JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID
     	
     }
     
-    /**
-     * Initialize the values for the Adventurer (stats, level, etc.)
-     * @param adventurer : The adventurer to initialize
-     */
-    /*public void initAdventurer(Adventurer adventurer) {
-    	connection = getSQLConnection();
-    	PreparedStatement initAdventurer = null;
-    	ResultSet response = null;
-    	double[] stats = new double[6];
-    	String uuid = "";
-    	int lastStyleID = 0;
-    	int homepointID = 0;
-    	int[] homePoint = new int[3];
-    	int styleID = 0;
-    	int adventurerID = 0;
-    	
-    	//Handling initialization of variables within tAdventurer
-    	try 
-    	{
-    		initAdventurer = connection.prepareStatement("SELECT * FROM tAdventurer WHERE Name = '" + adventurer.getPlayer().getName() + "';");
-    		response = initAdventurer.executeQuery();
-    		adventurerID = response.getInt(1);
-    		uuid = response.getString(2);
-    		lastStyleID = response.getInt(4);
-    		homepointID = response.getInt(11);
-    	}
-    	catch (SQLException ex) 
-        {
-            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
-        }
-        finally 
-        {
-            close(initAdventurer, response);
-        }
-    	
-    	//Handling initialization of HomePoint
-    	try 
-    	{
-    		initAdventurer = connection.prepareStatement("SELECT * FROM tHomePoint WHERE HomePointID = " + homepointID + ";");
-    		response = initAdventurer.executeQuery();
-    		homePoint[0] = response.getInt(1);
-    		homePoint[1] = response.getInt(2);
-    		homePoint[2] = response.getInt(3);
-    	}
-    	catch (SQLException ex) 
-        {
-            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
-        }
-        finally 
-        {
-        	close(initAdventurer, response);
-        }
-
-    	//Handling logging in as the last played style
-    	try 
-    	{
-    		initAdventurer = connection.prepareStatement("SELECT * FROM tUnlockedStyle WHERE UnlockedStyleID = " + lastStyleID + " AND AdventurerID = " + adventurerID + ";");
-    		response = initAdventurer.executeQuery();
-    		for (int i = 0; i < stats.length; i++)
-    		{
-    			stats[i] = response.getDouble(i + 2); //Add 2 as an offset to i to only grab the stat values which are doubles
-    		}
-    		styleID = response.getInt(1);
-    	}
-    	catch (SQLException ex) 
-        {
-            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
-        }
-        finally 
-        {
-        	close(initAdventurer, response);
-        }
-    	adventurer.setAtk(stats[0]);
-    	adventurer.setDef(stats[1]);
-    	adventurer.setMagAtk(stats[2]);
-    	adventurer.setMagDef(stats[3]);
-    	adventurer.setHp(stats[4]);
-    	adventurer.setMp(stats[5]);
-    	adventurer.setUuid(UUID.fromString(uuid));
-    }*/
-    
     public void saveAdventurer (Adventurer adventurer) {
     	connection = getSQLConnection();
     	PreparedStatement saveAdventurer = null;
     	
+    	//Update the adventurers last style
+    	try {
+    		saveAdventurer = connection.prepareStatement("UPDATE tAdventurer SET LastStyle = ? WHERE Name = ?");
+    		saveAdventurer.setString(1, adventurer.getLastStyle());
+    		saveAdventurer.setString(2, adventurer.getPlayer().getName());
+    	}
+    	catch (SQLException ex) {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+    	finally {
+            close(saveAdventurer);
+        }
     	
+    	//Update the adventurers base stats
+    	try {
+    		saveAdventurer = connection.prepareStatement("UPDATE tUnlockedStyle SET Attack = ?, Defense = ?, MagicAttack = ?, MagicDefense = ?, Health = ?, Mana = ?, Level = ?, Exp = ? WHERE AdventurerID = (SELECT AdventurerID FROM tAdventurer WHERE Name = ?) AND StyleID = (SELECT StyleID FROM tStyle WHERE tStyle.Name = (SELECT tAdventurer.LastStyle FROM tAdventurer WHERE tAdventurer.Name = ?));");
+    		saveAdventurer.setDouble(1, adventurer.getAtk());
+    		saveAdventurer.setDouble(2, adventurer.getDef());
+    		saveAdventurer.setDouble(3, adventurer.getMagAtk());
+    		saveAdventurer.setDouble(4, adventurer.getMagDef());
+    		saveAdventurer.setDouble(5, adventurer.getHp());
+    		saveAdventurer.setDouble(6, adventurer.getMp());
+    		saveAdventurer.setInt(7, adventurer.getLvl());
+    		saveAdventurer.setInt(8, adventurer.getExp());
+    		saveAdventurer.setString(9, adventurer.getPlayer().getName());
+    		saveAdventurer.setString(10, adventurer.getPlayer().getName());
+    	}
+    	catch (SQLException ex) {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+    	finally {
+            close(saveAdventurer);
+        }
+    	
+    	//Update their current roles ability points and stats
+    	try {
+    		saveAdventurer = connection.prepareStatement("UPDATE tUnlockedRole SET AbilityPoints = ?, Strength = ?, Vitality = ?, Intelligence = ?, Wisdom = ? WHERE AdventurerID = (SELECT AdventurerID FROM tAdventurer WHERE Name = ?) AND RoleID = (SELECT RoleID FROM tRole_Style WHERE StyleID = (SELECT StyleID FROM tStyle WHERE tStyle.Name = (SELECT tAdventurer.LastStyle FROM tAdventurer WHERE tAdventurer.Name = ?)));");
+    		saveAdventurer.setDouble(1, adventurer.getAbilityPoints());
+    		saveAdventurer.setDouble(2, adventurer.getStr());
+    		saveAdventurer.setDouble(3, adventurer.getVit());
+    		saveAdventurer.setDouble(4, adventurer.getIntel());
+    		saveAdventurer.setDouble(5, adventurer.getWis());
+    		saveAdventurer.setString(6, adventurer.getPlayer().getName());
+    		saveAdventurer.setString(7, adventurer.getPlayer().getName());
+    	}
+    	catch (SQLException ex) {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+    	finally {
+            close(saveAdventurer);
+        }
     }
     
     /**
