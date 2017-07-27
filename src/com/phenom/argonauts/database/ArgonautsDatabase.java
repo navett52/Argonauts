@@ -102,11 +102,12 @@ public abstract class ArgonautsDatabase
     }
     
     public void saveAdventurer (Adventurer adventurer) {
-    	connection = getSQLConnection();
+    	
     	PreparedStatement saveAdventurer = null;
     	
     	//Update the adventurers last style
     	try {
+    		connection = getSQLConnection();
     		saveAdventurer = connection.prepareStatement("UPDATE tAdventurer SET LastStyle = ? WHERE Name = ?");
     		saveAdventurer.setString(1, adventurer.getLastStyle());
     		saveAdventurer.setString(2, adventurer.getPlayer().getName());
@@ -120,6 +121,7 @@ public abstract class ArgonautsDatabase
     	
     	//Update the adventurers base stats
     	try {
+    		connection = getSQLConnection();
     		saveAdventurer = connection.prepareStatement("UPDATE tUnlockedStyle SET Attack = ?, Defense = ?, MagicAttack = ?, MagicDefense = ?, Health = ?, Mana = ?, Level = ?, Exp = ? WHERE AdventurerID = (SELECT AdventurerID FROM tAdventurer WHERE Name = ?) AND StyleID = (SELECT StyleID FROM tStyle WHERE tStyle.Name = (SELECT tAdventurer.LastStyle FROM tAdventurer WHERE tAdventurer.Name = ?));");
     		saveAdventurer.setDouble(1, adventurer.getAtk());
     		saveAdventurer.setDouble(2, adventurer.getDef());
@@ -141,6 +143,7 @@ public abstract class ArgonautsDatabase
     	
     	//Update their current roles ability points and stats
     	try {
+    		connection = getSQLConnection();
     		saveAdventurer = connection.prepareStatement("UPDATE tUnlockedRole SET AbilityPoints = ?, Strength = ?, Vitality = ?, Intelligence = ?, Wisdom = ? WHERE AdventurerID = (SELECT AdventurerID FROM tAdventurer WHERE Name = ?) AND RoleID = (SELECT RoleID FROM tRole_Style WHERE StyleID = (SELECT StyleID FROM tStyle WHERE tStyle.Name = (SELECT tAdventurer.LastStyle FROM tAdventurer WHERE tAdventurer.Name = ?)));");
     		saveAdventurer.setDouble(1, adventurer.getAbilityPoints());
     		saveAdventurer.setDouble(2, adventurer.getStr());
