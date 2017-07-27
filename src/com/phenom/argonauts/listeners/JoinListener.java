@@ -19,7 +19,7 @@ public class JoinListener implements Listener
 		
 		if (Main.db.checkForAdventurer(event.getPlayer().getName())) { //If this passes they already exist as an adventurer in the database!
 			Main.adventurers.put(event.getPlayer().getName(), new Adventurer(event.getPlayer(), UUID.fromString(Main.db.getUUID(event.getPlayer().getName()))));
-			Main.db.initAdventurer(Main.adventurers.get(event.getPlayer().getName())); //Working on this method right now
+			Main.db.initAdventurer(Main.adventurers.get(event.getPlayer().getName()));
 		}
 		else {
 			uuid = event.getPlayer().getUniqueId();

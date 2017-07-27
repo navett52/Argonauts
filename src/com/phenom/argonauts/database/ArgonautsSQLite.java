@@ -166,7 +166,7 @@ public class ArgonautsSQLite extends ArgonautsDatabase
      */
     public Connection getSQLConnection() 
     {
-        File dataFolder = new File(Main.plugin.getDataFolder(), dbname+".db");
+        File dataFolder = new File(Main.plugin.getDataFolder(), dbname + ".db");
         if (!dataFolder.exists())
         {
             try 
@@ -176,7 +176,7 @@ public class ArgonautsSQLite extends ArgonautsDatabase
             } 
             catch (IOException e) 
             {
-                Main.plugin.getLogger().log(Level.SEVERE, "File write error: "+dbname+".db");
+                Main.plugin.getLogger().log(Level.SEVERE, "File write error: " + dbname + ".db");
             }
         }
         try 

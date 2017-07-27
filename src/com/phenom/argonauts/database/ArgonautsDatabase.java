@@ -65,18 +65,6 @@ public abstract class ArgonautsDatabase
         }
     }
     
-    /*
-     * SELECT tAdventurer.Name, tHomePoint.xCoord, tHomePoint.yCoord, tHomePoint.zCoord, tRole.Name, tUnlockedRole.AbilityPoints, tUnlockedRole.Strength, tUnlockedRole.Vitality,
-tUnlockedRole.Intelligence, tUnlockedRole.Wisdom, tStyle.Name, tUnlockedStyle.Attack, tUnlockedStyle.Defense, tUnlockedStyle.MagicAttack, tUnlockedStyle.MagicDefense, tUnlockedStyle.Health, 
-tUnlockedStyle.Mana FROM tAdventurer
-JOIN tHomePoint ON tHomePoint.HomePointID = tAdventurer.HomePointID
-JOIN tStyle ON tStyle.Name = tAdventurer.LastStyle
-JOIN tUnlockedStyle ON tUnlockedStyle.StyleID = tStyle.StyleID
-JOIN tRole_Style ON tRole_Style.StyleID = tStyle.StyleID
-JOIN tRole ON tRole.RoleID = tRole_Style.RoleID
-JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID
-     */
-    
     public void initAdventurer (Adventurer adventurer) {
     	connection = getSQLConnection();
     	PreparedStatement initAdventurer = null;

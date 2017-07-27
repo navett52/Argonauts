@@ -144,6 +144,7 @@ public class Main extends JavaPlugin {
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
 				p.sendMessage(db.getUUID(p.getName()));
+				return true;
 			}
 		}
 		
