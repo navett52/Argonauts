@@ -24,3 +24,5 @@ commands:
   db:
     description: Test the DB connection by getting the players uuid
     usage: /db
+  save:
+    description: save an adventurers current values in the db

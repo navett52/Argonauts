@@ -37,25 +37,86 @@ public abstract class ArgonautsDatabase
      * @param lastStyleID : The ID of the last style the adventurer played (default - 0)
      * @param homePointID : The ID of the players registered home point (default - 0)
      */
-    public void addNewAdventurer(String Name, UUID UUID, int lastStyleID, int homePointID) 
+    public void addNewAdventurer(String Name, UUID UUID, String lastStyleName) 
     {
     	connection = getSQLConnection();
     	PreparedStatement addAdventurer = null;
+    	ResultSet adventurerID = null;
+    	int aid = 0;
     	try
     	{
     		addAdventurer = connection.prepareStatement("INSERT INTO tAdventurer (" + 
     				"UUID," +
     				"Name," +
-    				"LastStyle," +
-    				"HomePointID)" +
-    				"VALUES (?, ?, ?, ?);");
+    				"LastStyle)" +
+    				"VALUES (?, ?, ?);");
     		addAdventurer.setString(1, UUID.toString());
     		addAdventurer.setString(2, Name);
-    		addAdventurer.setDouble(3, lastStyleID);
-    		addAdventurer.setDouble(4, homePointID);
+    		addAdventurer.setString(3, lastStyleName);
     		addAdventurer.execute();
     	}
     	catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+        finally 
+        {
+            close(addAdventurer);
+        }
+    	
+    	try {
+    		connection = getSQLConnection();
+    		addAdventurer = connection.prepareStatement("SELECT AdventurerID FROM tAdventurer WHERE Name = ?");
+    		addAdventurer.setString(1, Name);
+    		adventurerID = addAdventurer.executeQuery();
+    		aid = adventurerID.getInt(1);
+    	}
+    	catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+        finally 
+        {
+            close(addAdventurer);
+        }
+    	
+		try {
+			connection = getSQLConnection();
+			addAdventurer = connection.prepareStatement("INSERT INTO tHomePoint (AdventurerID) VALUES (?)");
+			addAdventurer.setInt(1, aid);
+			addAdventurer.execute();
+		}
+		catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+        finally 
+        {
+            close(addAdventurer);
+        }
+		
+		try {
+			connection = getSQLConnection();
+			addAdventurer = connection.prepareStatement("INSERT INTO tUnlockedRole (AbilityPoints, Strength, Vitality, Intelligence, Wisdom, RoleID, AdventurerID) VALUES (0, 0, 0, 0, 0, 1, ?)");
+			addAdventurer.setInt(1, aid);
+			addAdventurer.execute();
+		}
+		catch (SQLException ex) 
+        {
+            Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+        }
+        finally 
+        {
+            close(addAdventurer);
+        }
+		
+		try {
+			connection = getSQLConnection();
+			addAdventurer = connection.prepareStatement("INSERT INTO tUnlockedStyle (Attack, Defense, MagicAttack, MagicDefense, Health, Mana, Level, Exp, StyleID, AdventurerID) VALUES (0, 0, 0, 0, 0, 0, 0, 0, 1, ?)");
+			addAdventurer.setInt(1, aid);
+			addAdventurer.execute();
+		}
+		catch (SQLException ex) 
         {
             Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
         }
@@ -71,7 +132,7 @@ public abstract class ArgonautsDatabase
     	ResultSet response = null;
     	
     	try {
-    		initAdventurer = connection.prepareStatement("SELECT tAdventurer.Name, tHomePoint.xCoord, tHomePoint.yCoord, tHomePoint.zCoord, tRole.Name, tUnlockedRole.AbilityPoints, tUnlockedRole.Strength, tUnlockedRole.Vitality, tUnlockedRole.Intelligence, tUnlockedRole.Wisdom, tStyle.Name, tUnlockedStyle.Attack, tUnlockedStyle.Defense, tUnlockedStyle.MagicAttack, tUnlockedStyle.MagicDefense, tUnlockedStyle.Health, tUnlockedStyle.Mana, tUnlockedStyle.Level, tUnlockedStyle.Exp FROM tAdventurer JOIN tHomePoint ON tHomePoint.HomePointID = tAdventurer.HomePointID JOIN tStyle ON tStyle.Name = tAdventurer.LastStyle JOIN tUnlockedStyle ON tUnlockedStyle.StyleID = tStyle.StyleID JOIN tRole_Style ON tRole_Style.StyleID = tStyle.StyleID JOIN tRole ON tRole.RoleID = tRole_Style.RoleID JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID WHERE tAdventurer.Name = ?");
+    		initAdventurer = connection.prepareStatement("SELECT tAdventurer.Name, tHomePoint.xCoord, tHomePoint.yCoord, tHomePoint.zCoord, tRole.Name, tUnlockedRole.AbilityPoints, tUnlockedRole.Strength, tUnlockedRole.Vitality, tUnlockedRole.Intelligence, tUnlockedRole.Wisdom, tStyle.Name, tUnlockedStyle.Attack, tUnlockedStyle.Defense, tUnlockedStyle.MagicAttack, tUnlockedStyle.MagicDefense, tUnlockedStyle.Health, tUnlockedStyle.Mana, tUnlockedStyle.Level, tUnlockedStyle.Exp FROM tAdventurer JOIN tHomePoint ON tHomePoint.AdventurerID = tAdventurer.AdventurerID JOIN tStyle ON tStyle.Name = tAdventurer.LastStyle JOIN tUnlockedStyle ON tUnlockedStyle.StyleID = tStyle.StyleID JOIN tRole_Style ON tRole_Style.StyleID = tStyle.StyleID JOIN tRole ON tRole.RoleID = tRole_Style.RoleID JOIN tUnlockedRole ON tUnlockedRole.RoleID = tRole.RoleID WHERE tAdventurer.Name = ?");
     		initAdventurer.setString(1, adventurer.getPlayer().getName());
     		response = initAdventurer.executeQuery();
     		//Looks like I'll need to modify the tHomePoint Schema to allow for a World to be set
@@ -82,7 +143,7 @@ public abstract class ArgonautsDatabase
     		adventurer.setVit(response.getInt(8));
     		adventurer.setIntel(response.getInt(9));
     		adventurer.setWis(response.getInt(10));
-    		//Might need to grab column 11 : Style Name if ricky wants me to add a LastStyle property to adventurer for now
+    		adventurer.setLastStyle(response.getString(11));
     		adventurer.setAtk(response.getDouble(12));
     		adventurer.setDef(response.getDouble(13));
     		adventurer.setMagAtk(response.getDouble(14));
@@ -111,6 +172,7 @@ public abstract class ArgonautsDatabase
     		saveAdventurer = connection.prepareStatement("UPDATE tAdventurer SET LastStyle = ? WHERE Name = ?");
     		saveAdventurer.setString(1, adventurer.getLastStyle());
     		saveAdventurer.setString(2, adventurer.getPlayer().getName());
+    		saveAdventurer.execute();
     	}
     	catch (SQLException ex) {
             Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
@@ -133,6 +195,7 @@ public abstract class ArgonautsDatabase
     		saveAdventurer.setInt(8, adventurer.getExp());
     		saveAdventurer.setString(9, adventurer.getPlayer().getName());
     		saveAdventurer.setString(10, adventurer.getPlayer().getName());
+    		saveAdventurer.execute();
     	}
     	catch (SQLException ex) {
             Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
@@ -152,6 +215,7 @@ public abstract class ArgonautsDatabase
     		saveAdventurer.setDouble(5, adventurer.getWis());
     		saveAdventurer.setString(6, adventurer.getPlayer().getName());
     		saveAdventurer.setString(7, adventurer.getPlayer().getName());
+    		saveAdventurer.execute();
     	}
     	catch (SQLException ex) {
             Main.plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);

@@ -123,6 +123,7 @@ public class Main extends JavaPlugin {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				Adventurer a = Main.adventurers.get(player.getName());
+				player.sendMessage("Style: " + a.getLastStyle());
 				player.sendMessage("Atk: " + a.getAtk());
 				player.sendMessage("Def: " + a.getDef());
 				player.sendMessage("MagAtk: " + a.getMagAtk());
@@ -145,6 +146,15 @@ public class Main extends JavaPlugin {
 				Player p = (Player) sender;
 				p.sendMessage(db.getUUID(p.getName()));
 				return true;
+			}
+		}
+		
+		if (command.getName().equalsIgnoreCase("save")) {
+			if (sender instanceof Player) {
+				Player p = (Player) sender;
+				p.sendMessage(adventurers.get(p.getName()).getUuid() + "!");
+				db.saveAdventurer(adventurers.get(p.getName()));
+				p.sendMessage("Ran through the Save command");
 			}
 		}
 		

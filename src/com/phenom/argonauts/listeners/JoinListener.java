@@ -33,8 +33,9 @@ public class JoinListener implements Listener
 			}
 			else { //If we cannot find the player by uuid, they are new and need to be created
 				Main.log.info(event.getPlayer().getName());
-				Main.db.addNewAdventurer(event.getPlayer().getName(), uuid, 0, 0);
+				Main.db.addNewAdventurer(event.getPlayer().getName(), uuid, "Adventurer");
 				Main.adventurers.put(event.getPlayer().getName(), new Adventurer(event.getPlayer(), uuid));
+				Main.db.initAdventurer(Main.adventurers.get(event.getPlayer().getName()));
 			}
 		}
 	}

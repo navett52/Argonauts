@@ -54,11 +54,9 @@ public class ArgonautsSQLite extends ArgonautsDatabase
     		"AdventurerID INTEGER PRIMARY KEY AUTOINCREMENT," +
     		"UUID VARCHAR(64) NOT NULL UNIQUE," + //The UUID of the player attached to this Adventurer
             "Name VARCHAR(32) NOT NULL UNIQUE," + //The name of the player attached to this Adventurer
-    		"LastStyle VARCHAR(25)," + //The last style played by the adventurer
+    		"LastStyle VARCHAR(25)" + //The last style played by the adventurer
             //Foreign Keys
-            "HomePointID INT UNIQUE," +
             //declaration of keys and constraints
-            "FOREIGN KEY (HomePointID) REFERENCES tHomePoint(HomePointID)" +
             ");";
     
     /**
@@ -114,8 +112,10 @@ public class ArgonautsSQLite extends ArgonautsDatabase
     		"HomePointID INTEGER PRIMARY KEY AUTOINCREMENT," +
     		"xCoord INT(10)," +
     		"yCoord INT(10)," +
-    		"zCoord INT(10)" +
+    		"zCoord INT(10)," +
+    		"AdventurerID INT(255) NOT NULL," +
     		//Declarations of keys and constraints
+    		"FOREIGN KEY (AdventurerID) REFERENCES tAdventurer(AdventurerID)" +
             ");";
     
     /**
@@ -159,6 +159,25 @@ public class ArgonautsSQLite extends ArgonautsDatabase
     		"FOREIGN KEY (StyleID) REFERENCES tStyle(StyleID)" +
             ");";
 
+    
+    //Insert records into the role table
+    public String appendRAdventurer = "INSERT INTO tRole (Name) VALUES ('Adventurer');";
+    
+    public String appendTank = "INSERT INTO tRole (Name) VALUES ('Tank');";
+    
+    public String appendHealer = "INSERT INTO tRole (Name) VALUES ('Healer');";
+    
+    public String appendDamage = "INSERT INTO tRole (Name) VALUES ('Damage');";
+    
+    //Insert records into the style table
+    public String appendSAdventurer = "INSERT INTO tStyle (Name) VALUES ('Adventurer');";
+    
+    public String appendWarrior = "INSERT INTO tStyle (Name) VALUES ('Warrior');";
+    
+    public String appendAdventurer_Adventurer = "INSERT INTO tRole_Style (RoleID, StyleID) VALUES (1, 1);";
+    
+    public String appendTank_Warrior = "INSERT INTO tRole_Style (RoleID, StyleID) VALUES (2, 2);";
+    
     /**
      * Creates the connection to our database.
      * If the database doesn't exist it creates it for us.
@@ -207,18 +226,27 @@ public class ArgonautsSQLite extends ArgonautsDatabase
     public void load() 
     {
         connection = getSQLConnection();
-        ArrayList<String> tables = new ArrayList<String>();
-        tables.add(SQLiteCreateAdventurerTable);
-        tables.add(SQLiteCreateUnlockedRoleTable);
-        tables.add(SQLiteCreateUnlockedStyleTable);
-        tables.add(SQLiteCreateHomepointTable);
-        tables.add(SQLiteCreateRoleTable);
-        tables.add(SQLiteCreateStyleTable);
-        tables.add(SQLiteCreateRole_StyleTable);
+        ArrayList<String> data = new ArrayList<String>();
+        data.add(SQLiteCreateAdventurerTable);
+        data.add(SQLiteCreateUnlockedRoleTable);
+        data.add(SQLiteCreateUnlockedStyleTable);
+        data.add(SQLiteCreateHomepointTable);
+        data.add(SQLiteCreateRoleTable);
+        data.add(SQLiteCreateStyleTable);
+        data.add(SQLiteCreateRole_StyleTable);
+        //Inserting data into the correct tables
+        data.add(appendRAdventurer);
+        data.add(appendTank);
+        data.add(appendHealer);
+        data.add(appendDamage);
+        data.add(appendSAdventurer);
+        data.add(appendWarrior);
+        data.add(appendAdventurer_Adventurer);
+        data.add(appendTank_Warrior);
         try 
         {
             Statement s = connection.createStatement();
-            for (String tableString : tables) 
+            for (String tableString : data) 
             {
             	s.executeUpdate(tableString);
             	s.close();
