@@ -51,6 +51,7 @@ public class Adventurer {
 	 * @param player The player we want to make an adventurer.
 	 */
 	public Adventurer(Player player, UUID uuid) {
+		//TODO : Check to make sure a home point is set before allowing this ability to fire
 		Main.adventurers.put(player.getName(), this);
 		this.player = player;
 		this.uuid = uuid;
