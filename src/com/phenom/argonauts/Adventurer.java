@@ -55,23 +55,6 @@ public class Adventurer {
 		Main.adventurers.put(player.getName(), this);
 		this.player = player;
 		this.uuid = uuid;
-		ItemStack returnToHomeIcon = new ItemStack(Material.BEACON, 1);
-		player.getInventory().setHeldItemSlot(0);
-		player.getInventory().setItemInMainHand(returnToHomeIcon);
-		this.abilities.put("Return", new Return(Cooldown.FIVE_S));
-	}
-
-	/**
-	 * Returns an adventurer to their most recently registered home point.
-	 */
-	public void returnToHome() {
-		if (abilities.get("Return").isActive() == true) {
-			AbilityUseEvent returnCooldown = new AbilityUseEvent(this, abilities.get("Return"));
-			Bukkit.getServer().getPluginManager().callEvent(returnCooldown);
-			player.sendMessage("You have returned!");
-		} else {
-			player.sendMessage("That is still on cooldown!");
-		}
 	}
 	
 	/*
