@@ -48,3 +48,4 @@ Temporary Items
 
 # Byte Code Files
 *.class
+/bin/
