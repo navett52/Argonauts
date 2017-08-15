@@ -6,10 +6,12 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.phenom.argonauts.commands.Debug;
 import com.phenom.argonauts.database.ArgonautsDatabase;
 import com.phenom.argonauts.database.ArgonautsSQLite;
 import com.phenom.argonauts.denizens.DenizenModule;
@@ -17,7 +19,6 @@ import com.phenom.argonauts.denizens.Support;
 import com.phenom.argonauts.denizens.SupportManager;
 import com.phenom.argonauts.listeners.JoinListener;
 import com.phenom.argonauts.listeners.LogoffListener;
-import com.phenom.argonauts.listeners.PlayerInteractListener;
 
 public class Main extends JavaPlugin {
 	
@@ -40,10 +41,16 @@ public class Main extends JavaPlugin {
 		db = new ArgonautsSQLite(); //Initializing our database variable
 		db.load(); //Loads in our db instance. Creates all the tables if they do not exist
 		console = getServer().getConsoleSender(); //Instantiating our console reference
+		
+		//Registering event listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new JoinListener(), plugin); //Register a join event listener to listen for when players join
-		Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), plugin); //Register an interact listener
 		Bukkit.getServer().getPluginManager().registerEvents(new LogoffListener(), plugin); //Register a listener to see when a player logs off
-		log.info(pdf.getName() + " version: " + pdf.getVersion() + " has been loaded!"); //Log to the console the plguin name and current version number
+		
+		//Registering commands
+		Debug debug = new Debug();
+		for (String cmd : debug.debugCommands) {
+			this.getCommand(cmd).setExecutor(debug);
+		}
 		
 		//===Start Denizens implementation stuffs
 		PluginManager pm = getServer().getPluginManager();
@@ -67,6 +74,8 @@ public class Main extends JavaPlugin {
 		}
         supportmanager.registerNewObjects();
         //===End Denizens implementation stuffs
+        
+        log.info(pdf.getName() + " version: " + pdf.getVersion() + " has been loaded!"); //Log to the console the plguin name and current version number
 	}
 	
 	/**
