@@ -23,8 +23,10 @@ public class Debug implements CommandExecutor {
 			if (sender instanceof Player) {
 				String specifiedPlayer = "";
 				Player p = (Player) sender;
-				if (!args[0].isEmpty() && args != null) {
-					specifiedPlayer = args[0];
+				if (args.length != 0) {
+					if (!args[0].isEmpty() && args != null) {
+						specifiedPlayer = args[0];
+					}
 				}
 				else {
 					p.sendMessage(Main.adventurers.containsKey(p.getName()) + "");
@@ -46,8 +48,10 @@ public class Debug implements CommandExecutor {
 				String specifiedPlayer = "";
 				Player p = (Player) sender;
 				Adventurer a = null;
-				if (!args[0].isEmpty() && args != null) {
-					specifiedPlayer = args[0];
+				if (args.length != 0) {
+					if (!args[0].isEmpty() && args != null) {
+						specifiedPlayer = args[0];
+					}
 				}
 				else {
 					a = Main.adventurers.get(p.getName());
@@ -108,8 +112,10 @@ public class Debug implements CommandExecutor {
 			if (sender instanceof Player) {
 				String specifiedPlayer = "";
 				Player p = (Player) sender;
-				if (!args[0].isEmpty()) {
-					specifiedPlayer = args[0];
+				if (args.length != 0) {
+					if (!args[0].isEmpty() && args != null) {
+						specifiedPlayer = args[0];
+					}
 				}
 				else {
 					Main.db.saveAdventurer(Main.adventurers.get(p.getName()));
