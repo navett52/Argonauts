@@ -6,23 +6,27 @@ authors: [Evan]
 main: com.phenom.argonauts.Main
 softdepend: [Denizen]
 commands:
-  uuid:
-    description: display your uuid.
-    usage: Simply type /uuid. This will show you your uuid!
-  sethomepoint:
-    description: Set the home point to return to.
-    usage: Simply type sethomepoint, and your home will be set!
-  adventurer:
-    description: Check and see if you're an adventurer.
-    usage: Simply type /adventurer. Returns true if you are and false otherwise
-  mark:
-    description: Set your current location to be where your compass points to!
-    usage: Stand where you want the compass to point to, then type /mark to make your compass point to that spot!
-  init:
-    description: List the initialized player properties
-    usage: /init
-  db:
-    description: Test the DB connection by getting the players uuid
-    usage: /db
+  isAdventurer:
+    description: Check to see if a player is properly registered as an adventurer
+    aliases: [adventurer, isAd]
+    permission: argonauts.debug
+    permission-message: You do not have permission to access Argonauts debug commands
+    usage: /isAdventurer [player to check]
+  check:
+    description: Check the stats and other Argonauts values of an Adventurer
+    aliases: [checkstats, values, val]
+    permission: argonauts.debug
+    permission-message: You do not have permission to access Argonauts debug commands
+    usage: /check [player to check]
+  isConnected:
+    description: Check the database connection
+    aliases: [connected, testdb, testcon]
+    permission: argonauts.debug
+    permission-message: You do not have permission to access Argonauts debug commands
+    usage: /isConnected
   save:
-    description: save an adventurers current values in the db
+    description: Save an Advneutrers current stats
+    aliases: [update]
+    permission: argonauts.debug
+    permission-message: You do not have permission to access Argonauts debug commands
+    usage: /save [player to save]
