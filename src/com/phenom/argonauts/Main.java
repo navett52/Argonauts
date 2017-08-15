@@ -5,11 +5,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,92 +65,6 @@ public class Main extends JavaPlugin {
 		}
         supportmanager.registerNewObjects();
         //===End Denizens implementation stuffs
-	}
-	
-	/**
-	 * Mainly used for debuggin right now.
-	 * This method allows players to input commands from in game.
-	 * sender - Whoever is sending the command. (Could be console or a player)
-	 * command - the command typed
-	 * label - not sure
-	 * args[] - any arguments typed after the initial command name
-	 * returns true if successful or false otherwise
-	 */
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (command.getName().equalsIgnoreCase("uuid")) {
-			if (sender instanceof Player) {
-				Player player = (Player)sender;
-				player.sendMessage("Your raw uuid is: " + player.getUniqueId());
-				player.sendMessage("Your toString uuid is: " + player.getUniqueId().toString());
-			}
-		}
-		
-		if (command.getName().equalsIgnoreCase("sethomepoint")) {
-			if (sender instanceof Player) {
-				Player player = (Player) sender;
-				Adventurer adventurer = adventurers.get(player.getName());
-				adventurer.setHome(player.getLocation());
-				player.sendMessage(ChatColor.GREEN + "You've set a homepoint!");
-			}
-		}
-		
-		if (command.getName().equalsIgnoreCase("adventurer")) {
-			if (sender instanceof Player) {
-				Player player = (Player) sender;
-				player.sendMessage(adventurers.containsKey(player.getName()) + "");
-			}
-		}
-		
-		if (command.getName().equalsIgnoreCase("mark")) 
-		{
-			if (sender instanceof Player)
-			{
-				Player player = (Player) sender;
-				player.setCompassTarget(player.getLocation());
-			}
-		}
-		
-		if (command.getName().equalsIgnoreCase("init")) {
-			if (sender instanceof Player) {
-				Player player = (Player) sender;
-				Adventurer a = Main.adventurers.get(player.getName());
-				player.sendMessage("Style: " + a.getLastStyle());
-				player.sendMessage("Atk: " + a.getAtk());
-				player.sendMessage("Def: " + a.getDef());
-				player.sendMessage("MagAtk: " + a.getMagAtk());
-				player.sendMessage("MagDef: " + a.getMagDef());
-				player.sendMessage("Hp: " + a.getHp());
-				player.sendMessage("Mp: " + a.getMp());
-				player.sendMessage("Lvl: " + a.getLvl());
-				player.sendMessage("Exp: " + a.getExp());
-				
-				player.sendMessage("AP: " + a.getAbilityPoints());
-				player.sendMessage("Str: " + a.getStr());
-				player.sendMessage("Vit: " + a.getVit());
-				player.sendMessage("Intel: " + a.getIntel());
-				player.sendMessage("Wis: " + a.getWis());
-			}
-		}
-		
-		if (command.getName().equalsIgnoreCase("db")) {
-			if (sender instanceof Player) {
-				Player p = (Player) sender;
-				p.sendMessage(db.getUUID(p.getName()));
-				return true;
-			}
-		}
-		
-		if (command.getName().equalsIgnoreCase("save")) {
-			if (sender instanceof Player) {
-				Player p = (Player) sender;
-				p.sendMessage(adventurers.get(p.getName()).getUuid() + "!");
-				db.saveAdventurer(adventurers.get(p.getName()));
-				p.sendMessage("Ran through the Save command");
-			}
-		}
-		
-		return false;
 	}
 	
 	/**
