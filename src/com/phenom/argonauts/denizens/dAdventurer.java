@@ -58,10 +58,10 @@ public class dAdventurer implements dObject, Adjustable {
 		if (a.startsWith("def")) {
 			return new Element(this.adventurer.getDef()).getAttribute(a.fulfill(1));
 		}
-		if (a.startsWith("magAtk")) {
+		if (a.startsWith("magatk")) {
 			return new Element(this.adventurer.getMagAtk()).getAttribute(a.fulfill(1));
 		}
-		if (a.startsWith("magDef")) {
+		if (a.startsWith("magdef")) {
 			return new Element(this.adventurer.getMagDef()).getAttribute(a.fulfill(1));
 		}
 		if (a.startsWith("hp")) {
@@ -123,10 +123,10 @@ public class dAdventurer implements dObject, Adjustable {
 		else if (m.matches("def") && m.requireDouble()) {
 			this.adventurer.setDef(value.asDouble());
 		}
-		else if (m.matches("magAtk") && m.requireDouble()) {
+		else if (m.matches("magatk") && m.requireDouble()) {
 			this.adventurer.setMagAtk(value.asDouble());
 		}
-		else if (m.matches("magDef") && m.requireDouble()) {
+		else if (m.matches("magdef") && m.requireDouble()) {
 			this.adventurer.setMagDef(value.asDouble());
 		}
 		else if (m.matches("hp") && m.requireDouble()) {

@@ -3,16 +3,9 @@ package com.phenom.argonauts;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.phenom.argonauts.abilities.Ability;
-import com.phenom.argonauts.abilities.Cooldown;
-import com.phenom.argonauts.abilities.adventurer.Return;
-import com.phenom.argonauts.events.AbilityUseEvent;
 
 public class Adventurer {
 	
@@ -55,23 +48,6 @@ public class Adventurer {
 		Main.adventurers.put(player.getName(), this);
 		this.player = player;
 		this.uuid = uuid;
-		ItemStack returnToHomeIcon = new ItemStack(Material.BEACON, 1);
-		player.getInventory().setHeldItemSlot(0);
-		player.getInventory().setItemInMainHand(returnToHomeIcon);
-		this.abilities.put("Return", new Return(Cooldown.FIVE_S));
-	}
-
-	/**
-	 * Returns an adventurer to their most recently registered home point.
-	 */
-	public void returnToHome() {
-		if (abilities.get("Return").isActive() == true) {
-			AbilityUseEvent returnCooldown = new AbilityUseEvent(this, abilities.get("Return"));
-			Bukkit.getServer().getPluginManager().callEvent(returnCooldown);
-			player.sendMessage("You have returned!");
-		} else {
-			player.sendMessage("That is still on cooldown!");
-		}
 	}
 	
 	/*
